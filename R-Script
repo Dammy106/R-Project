@@ -1,0 +1,136 @@
+#Loading in my Data
+mental_health = read.csv("Student Mental health(2).csv")
+
+#Names of Columns
+names(mental_health)
+mental_health
+
+
+# Filtering the dataset to include only males
+male_data <- subset(mental_health, Gender == "Male")
+male_data
+
+#These next steps are to help do the power analysis and the chisq test
+# Install devtools package if you haven't already
+install.packages("devtools")
+
+# Load devtools package
+library(devtools)
+
+# Install pwr package from GitHub
+devtools::install_github("cran/pwr")
+
+# Load the pwr package
+library(pwr)
+
+
+# Define parameters for the power analysis
+effect_size <- 0.5  # Example effect size (you may need to specify a meaningful effect size)
+alpha <- 0.05       # Significance level
+power <- 0.8        # Desired power
+
+# Perform power analysis for a t-test
+sample_size <- pwr.t.test(d = effect_size, sig.level = alpha, power = power,
+                          type = "two.sample", alternative = "two.sided")$n
+
+# Print the required sample size
+print(sample_size)
+
+library(stats)
+#Doing a power analysis 
+# Perform chi-squared test
+chisq_test <- chisq.test(table(male_data$Major, male_data$Depression))
+# Print the chi-squared test results
+print(chisq_test)
+
+
+#Next I have descriptive statistics
+# Descriptive statistics for depression
+depression_stats <- summary(male_data$Depression)
+# Descriptive statistics for age
+age_stats <- summary(male_data$Age)
+# Descriptive statistics for What.is.your.course
+course_stats <- summary(male_data$Major)
+# Descriptive statistics for depression
+depression_counts <- table(male_data$Depression)
+depression_proportions <- prop.table(depression_counts)
+
+# Descriptive statistics for major (course)
+course_counts <- table(male_data$Major)
+course_proportions <- prop.table(course_counts)
+
+# Print the descriptive statistics
+#print Depression Stats
+print("Depression Counts:")
+print(depression_counts)
+
+print("Depression Proportions:")
+print(depression_proportions)
+
+#Print Course Stats
+print("Course Counts:")
+print(course_counts)
+
+print("Course Proportions:")
+print(course_proportions)
+
+# Print the descriptive statistics using summary values
+print("Depression:")
+print(depression_stats)
+
+# Print the descriptive statistics for age
+print("Age:")
+print(age_stats)
+
+# Print the descriptive statistics for course
+print("Course:")
+print(course_stats)
+
+#Making a graph ofAge vs Depression
+# Load required library for plotting
+library(ggplot2)
+
+# Create a boxplot
+ggplot(male_data, aes(x = Depression, y = Age)) +
+  geom_boxplot() +
+  labs(x = "Depression", y = "Age") +
+  ggtitle("Age vs Depression (Male)")
+
+#Create a histogram
+ggplot(male_data, aes(x = Age, fill = Depression)) +
+  geom_histogram(binwidth = 1, position = "identity", alpha = 0.6) +
+  labs(x = "Age", y = "Count") +
+  ggtitle("Distribution of Age by Depression Status (Male)") +
+  scale_fill_manual(values = c("no" = "blue", "yes" = "red"))
+
+# Generate frequency counts for depression
+depression_freq <- table(male_data$Depression)
+print(depression_freq)
+
+# Generate frequency counts for anxiety
+anxiety_freq <- table(male_data$Anxiety)
+print(anxiety_freq)
+
+# Generate frequency counts for panic attacks
+panic_freq <- table(male_data$Panic_Attacks)
+print(panic_freq)
+
+# Generate frequency counts for treatment
+treatment_freq <- table(male_data$Specialist_Treatment)
+print(treatment_freq)
+
+## I was also interested in seeing which major had the most yes for depression
+# Filter the data to include only rows where Depression is "yes"
+depression_yes <- subset(male_data, Depression == "Yes")
+
+# Count the number of "yes" responses for each major
+depression_by_course <- table(depression_yes$Major)
+
+# Identify the major with the highest count of "yes" responses
+most_depression_major <- names(which.max(depression_by_course))
+
+# Print the results
+print("Number of 'Yes' responses for each major:")
+print(depression_by_course)
+print("Major with the most 'yes' responses for depression:")
+print(most_depression_major)
